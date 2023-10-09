@@ -62,7 +62,7 @@ class LetterDissect {
 
 		$charset = null;
 		foreach($this->structure[$section]->parameters as $param) {
-			if($param->attribute=='CHARSET') {
+			if(strtolower($param->attribute)=='charset') {
 				$charset = strtolower($param->value);
 			}
 		}
