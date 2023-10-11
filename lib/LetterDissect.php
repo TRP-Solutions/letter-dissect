@@ -63,15 +63,41 @@ class LetterDissect {
 		$charset = null;
 		foreach($this->structure[$section]->parameters as $param) {
 			if(strtolower($param->attribute)=='charset') {
-				$charset = strtolower($param->value);
+				$charset = $param->value;
 			}
 		}
-		if($charset=='windows-1252') {
-			$body = mb_convert_encoding($body, 'UTF-8', 'Windows-1252');
+
+		return self::charset_decode($body,$charset);
+	}
+
+	public static function header_decode($string) {
+		$return = '';
+		foreach(imap_mime_header_decode($string) as $var) {
+			$return .= self::charset_decode($var->text,$var->charset);
+		}
+		return $return;
+	}
+
+	private static function charset_decode($string,$charset) {
+		$charset = strtolower($charset);
+		if($charset == null) {
+			return $string;
 		}
 		elseif($charset=='iso-8859-1') {
-			$body = mb_convert_encoding($body, 'UTF-8', 'ISO-8859-1');
+			return mb_convert_encoding($string, 'UTF-8', 'ISO-8859-1');
 		}
-		return $body;
+		elseif($charset=='utf-8') {
+			return $string;
+		}
+		elseif($charset=='default') {
+			return $string;
+		}
+		elseif($charset=='us-ascii') {
+			return $string;
+		}
+		elseif($charset=='windows-1252') {
+			return mb_convert_encoding($string, 'UTF-8', 'Windows-1252');
+		}
+		throw new \Exception('Invalid charset: '.$charset);
 	}
 }
