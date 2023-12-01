@@ -78,6 +78,19 @@ class LetterDissect {
 		return $return;
 	}
 
+	public static function subaddress($input) {
+		$toaddress = trim(mb_substr($input,mb_strpos($input,'<')+1,-1));
+		if(empty($toaddress)) {
+			throw new \Exception('Invalid toaddres');
+		}
+		$length =  mb_strrpos($toaddress,'@') - mb_strpos($toaddress,'+')-1;
+		$subaddress = trim(mb_substr($toaddress,mb_strpos($toaddress,'+')+1,$length));
+		if(empty($subaddress)) {
+			throw new \Exception('No subaddress');
+		}
+		return explode('+',$subaddress);
+	}
+
 	private static function charset_decode($string,$charset) {
 		$charset = strtolower($charset);
 		if($charset == null) {
