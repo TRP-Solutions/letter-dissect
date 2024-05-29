@@ -78,8 +78,11 @@ class LetterDissect {
 		return $return;
 	}
 
-	public static function address($input) {
-		$address = trim(mb_substr($input,mb_strpos($input,'<')+1,-1));
+	public static function address($string) {
+		$address = [];
+		foreach(explode(',',$string) as $input) {
+			$address[] = trim(mb_substr($input,mb_strpos($input,'<')+1,-1));
+		}
 		if(empty($address)) {
 			throw new \Exception('Invalid address');
 		}
