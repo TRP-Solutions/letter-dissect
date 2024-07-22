@@ -81,7 +81,11 @@ class LetterDissect {
 	public static function address($string) {
 		$address = [];
 		foreach(explode(',',$string) as $input) {
-			$address[] = trim(mb_substr($input,mb_strpos($input,'<')+1,-1));
+			$input = self::header_decode($input);
+			if(mb_strpos($input,'<')!==false && mb_strpos($input,'>')!==false) {
+				$input = mb_substr($input,mb_strpos($input,'<')+1,(mb_strpos($input,'>')-mb_strpos($input,'<'))-1);
+			}
+			$address[] = trim($input);
 		}
 		if(empty($address)) {
 			throw new \Exception('Invalid address');
