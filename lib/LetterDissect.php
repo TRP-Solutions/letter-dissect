@@ -47,6 +47,23 @@ class LetterDissect {
 		return array_keys($this->structure);
 	}
 
+	public function fetchinfo($section) {
+		if(!isset($this->structure[$section])) {
+			throw new \Exception('Invalid section');
+		}
+		$return = [];
+		$return['subtype'] = $this->structure[$section]->subtype;
+		$return['disposition'] = $this->structure[$section]->disposition;
+
+		foreach($this->structure[$section]->dparameters as $value) {
+			if($value->attribute=='filename') {
+				$return['filename'] = $value->value;
+			}
+		}
+
+		return $return;
+	}
+
 	public function fetchbody($section) {
 		if(!isset($this->structure[$section])) {
 			throw new \Exception('Invalid section');
