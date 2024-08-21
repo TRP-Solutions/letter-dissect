@@ -120,15 +120,15 @@ class LetterDissect {
 	}
 
 	private static function charset_decode($string,$charset) {
+		if($charset === null) {
+			return $string;
+		}
 		$charset = strtolower($charset);
-		if($charset == null) {
+		if($charset=='utf-8') {
 			return $string;
 		}
 		elseif($charset=='iso-8859-1') {
 			return mb_convert_encoding($string, 'UTF-8', 'ISO-8859-1');
-		}
-		elseif($charset=='utf-8') {
-			return $string;
 		}
 		elseif($charset=='default') {
 			return $string;
