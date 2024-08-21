@@ -5,14 +5,14 @@ https://github.com/TRP-Solutions/letter-dissect/blob/main/LICENSE
 */
 
 class LetterDissect {
-	private $mbox;
+	private $imap;
 	private $message_num;
 	private $structure = [];
 
-	function __construct($mbox,$message_num) {
-		$this->mbox = $mbox;
+	function __construct($imap,$message_num) {
+		$this->imap = $imap;
 		$this->message_num = $message_num;
-		$structure = imap_fetchstructure($this->mbox, $message_num);
+		$structure = imap_fetchstructure($this->imap, $message_num);
 		if($structure->type!==TYPEMULTIPART) {
 			$this->part($structure,1);
 		}
@@ -69,7 +69,7 @@ class LetterDissect {
 			throw new \Exception('Invalid section');
 		}
 
-		$body = imap_fetchbody($this->mbox,$this->message_num,$section);
+		$body = imap_fetchbody($this->imap,$this->message_num,$section);
 		if($this->structure[$section]->encoding==ENCBASE64) {
 			$body = base64_decode($body);
 		}
