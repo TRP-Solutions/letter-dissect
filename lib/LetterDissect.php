@@ -130,6 +130,9 @@ class LetterDissect {
 		elseif($charset=='iso-8859-1') {
 			return mb_convert_encoding($string, 'UTF-8', 'ISO-8859-1');
 		}
+		elseif($charset=='iso-8859-9') {
+			return mb_convert_encoding($string, 'UTF-8', 'ISO-8859-9');
+		}
 		elseif($charset=='default') {
 			return $string;
 		}
