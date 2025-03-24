@@ -10,32 +10,32 @@ class LetterDissect {
 	private $message_num;
 	private $structure = [];
 
-	function __construct($imap,$message_num) {
+	function __construct(object $imap,int $message_num) {
 		$this->imap = $imap;
 		$this->message_num = $message_num;
 		$structure = imap_fetchstructure($this->imap, $message_num);
 		if($structure->type!==TYPEMULTIPART) {
-			$this->part($structure,1);
+			$this->part($structure,(string) 1);
 		}
 		else {
 			foreach($structure->parts as $count => $value) {
-				$this->part($value,($count+1));
+				$this->part($value,(string) ($count+1));
 			}
 		}
 	}
 
-	private function part($part,$section) {
+	private function part(object $part,string $section) : void {
 		if($part->type===TYPEMULTIPART) {
 			foreach($part->parts as $count => $value) {
 				$this->part($value,$section.'.'.($count+1));
 			}
 		}
 		else {
-			$this->structure[$section] = $part;
+			$this->structure['.'.$section] = $part;
 		}
 	}
 
-	public function subtype(...$subtype) {
+	public function subtype(...$subtype) : array {
 		if($subtype) {
 			$return = [];
 			foreach($this->structure as $key => $value) {
@@ -48,7 +48,7 @@ class LetterDissect {
 		return array_keys($this->structure);
 	}
 
-	public function fetchinfo($section) {
+	public function fetchinfo(string $section) : array {
 		if(!isset($this->structure[$section])) {
 			throw new \Exception('Invalid section');
 		}
@@ -65,12 +65,12 @@ class LetterDissect {
 		return $return;
 	}
 
-	public function fetchbody($section) {
+	public function fetchbody(string $section) : string {
 		if(!isset($this->structure[$section])) {
 			throw new \Exception('Invalid section');
 		}
 
-		$body = imap_fetchbody($this->imap,$this->message_num,$section);
+		$body = imap_fetchbody($this->imap,$this->message_num,substr($section,1));
 		if($this->structure[$section]->encoding==ENCBASE64) {
 			$body = base64_decode($body);
 		}
@@ -88,7 +88,7 @@ class LetterDissect {
 		return self::charset_decode($body,$charset);
 	}
 
-	public static function header_decode($string) {
+	public static function header_decode(string $string) : string {
 		$return = '';
 		foreach(imap_mime_header_decode($string) as $var) {
 			$return .= self::charset_decode($var->text,$var->charset);
@@ -96,7 +96,7 @@ class LetterDissect {
 		return $return;
 	}
 
-	public static function address($string) {
+	public static function address(string $string) : array {
 		$address = [];
 		foreach(explode(',',$string) as $input) {
 			$input = self::header_decode($input);
@@ -111,7 +111,7 @@ class LetterDissect {
 		return $address;
 	}
 
-	public static function subaddress($input) {
+	public static function subaddress(string $input) : array {
 		$length =  mb_strrpos($input,'@') - mb_strpos($input,'+')-1;
 		$subaddress = trim(mb_substr($input,mb_strpos($input,'+')+1,$length));
 		if(empty($subaddress)) {
@@ -120,7 +120,7 @@ class LetterDissect {
 		return explode('+',$subaddress);
 	}
 
-	private static function charset_decode($string,$charset) {
+	private static function charset_decode(string $string,?string $charset) : string {
 		if($charset === null) {
 			return $string;
 		}
