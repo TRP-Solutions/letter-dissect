@@ -134,6 +134,9 @@ class LetterDissect {
 		elseif($charset=='iso-8859-9') {
 			return mb_convert_encoding($string, 'UTF-8', 'ISO-8859-9');
 		}
+		elseif($charset=='iso-8859-15') {
+			return mb_convert_encoding($string, 'UTF-8', 'ISO-8859-15');
+		}
 		elseif($charset=='default') {
 			return $string;
 		}
@@ -142,6 +145,9 @@ class LetterDissect {
 		}
 		elseif($charset=='windows-1252') {
 			return mb_convert_encoding($string, 'UTF-8', 'Windows-1252');
+		}
+		elseif($charset=='windows-1257') {
+			return mb_convert_encoding($string, 'UTF-8', 'ISO-8859-13');
 		}
 		throw new \Exception('Invalid charset: '.$charset);
 	}
