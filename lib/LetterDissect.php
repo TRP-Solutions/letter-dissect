@@ -52,9 +52,17 @@ class LetterDissect {
 		if(!isset($this->structure[$section])) {
 			throw new \Exception('Invalid section');
 		}
+
 		$return = [];
 		$return['subtype'] = $this->structure[$section]->subtype;
 		$return['disposition'] = $this->structure[$section]->disposition;
+
+		$mime = strtolower(imap_fetchmime($this->imap,$this->message_num,substr($section,1)));
+		$start = strpos($mime,'content-type:');
+		if($start!==false) {
+			$start += 13;
+			$return['mime'] = trim(substr($mime,$start,strpos($mime,';',$start)-$start));
+		}
 
 		foreach($this->structure[$section]->dparameters as $value) {
 			if($value->attribute=='filename') {
